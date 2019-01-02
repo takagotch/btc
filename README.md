@@ -19,3 +19,6 @@ https://btc.com/api-doc
 
 http://bitcoin.peryaudo.org/implement.html
 
+---
+
+https://github.com/igorbarinov/awesome-bitcoin#utilities

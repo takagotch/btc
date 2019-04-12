@@ -81,7 +81,7 @@ commitment_tx.in[0].script_sig = script_sig_a
 
 commitment_tx_copy = commitment_tx
 
-script_sig_b = Bitcoin::Script.add_sig_to_multisig_script_sig(bob_key.sign(commitment_sig_hash))
+script_sig_b = Bitcoin::Script.add_sig_to_multisig_script_sig(bob_key.sign(commitment_sig_hash), script_sig_a)
 script_sig_c = Bitcoin::Script.sort_p2sh_multisig_signature(script_sig_b, commitment_sig_hash)
 commitment_tx_copy.in[0].script_sig = script_sig_c
 commitment_tx_copy.verify_input_signature(0, opening_tx)

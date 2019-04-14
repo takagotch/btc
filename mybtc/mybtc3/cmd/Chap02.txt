@@ -1,0 +1,128 @@
+コマンド2-2-1　インストールディレクトリの作成・移動
+$ mkdir -p ~/bx ; cd ~/bx
+
+コマンド2-2-2　wgetでモジュールをダウンロード
+$ wget https://github.com/libbitcoin/libbitcoin-explorer/releases/download/v3.2.0/bx-linux-x64-qrcode
+
+コマンド2-2-3　ファイル名を変更し、実行権限を付与
+$ mv bx-linux-x64-qrcode bx ; chmod 700 bx ; ls -l
+total 4924
+-rwx------ 1 bc01 bc01 5037768  5月 26  2017 bx
+
+コマンド2-2-4　PATHの追加（viエディタを起動）
+$ vi ~/.bashrc
+
+コマンド2-2-5　.bashrcを読み込む
+$ source ~/.bashrc
+
+コマンド2-2-6　パスが通ったか確認
+$ which bx
+/home/bc01/bx/bx
+
+コマンド2-3-1　必要なパッケージのインストール
+$ sudo apt-get install build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils python3
+$ sudo apt-get install libboost-all-dev
+$ sudo apt-get install software-properties-common
+$ sudo add-apt-repository ppa:bitcoin/bitcoin
+$ sudo apt-get update
+$ sudo apt-get install libdb4.8-dev libdb4.8++-dev
+$ sudo apt-get install libminiupnpc-dev
+$ sudo apt-get install libzmq3-dev
+$ sudo apt-get install libqt5gui5 libqt5core5a libqt5dbus5 qttools5-dev qttools5-dev-tools libprotobuf-dev protobuf-compiler
+$ sudo apt-get install libqrencode-dev
+
+コマンド2-3-2　Bitcoin Core 0.16.0のビルド
+$ cd ~
+$ pwd
+/home/bc01
+$ git clone https://github.com/bitcoin/bitcoin.git bc_git
+$ cd bc_git/
+$ git checkout v0.16.0
+$ ./autogen.sh
+$ ./configure --prefix=$HOME/bc
+$ make
+$ make install
+
+コマンド2-3-2　~/.bashrcの読み込みとパスの確認
+$ source ~/.bashrc
+$ which bitcoind
+/home/bc01/bc/bin/bitcoind
+
+コマンド2-4-1　~/.bitcoinディレクトリを作成
+$ mkdir -p ~/.bitcoin ; cd ~/.bitcoin
+
+コマンド2-4-2　bitcoindサービスを起動
+$ bitcoind -daemon
+Bitcoin server starting
+
+コマンド2-4-3　aliasの設定
+$ echo "alias bcit='bitcoin-cli'" >> ~/.bashrc
+$ tail -1 ~/.bashrc
+alias bcit='bitcoin-cli'
+$ source ~/.bashrc
+
+コマンド2-4-4　メソッドの確認
+$ bcit help
+== Blockchain ==
+getbestblockhash
+getblock "blockhash" ( verbosity )
+getblockchaininfo
+getblockcount
+getblockhash height
+getblockheader "hash" ( verbose )
+getchaintips
+getchaintxstats ( nblocks blockhash )
+getdifficulty
+（略）
+
+コマンド2-4-5　メソッドの詳細を確認
+$ bcit help getbestblockhash
+getbestblockhash
+
+Returns the hash of the best (tip) block in the longest blockchain.
+
+Result:
+"hex"      (string) the block hash hex encoded
+
+Examples:
+> bitcoin-cli getbestblockhash
+> curl --user myusername --data-binary '{"jsonrpc": "1.0", "id":"curltest", "method": "getbestblockhash", "params": [] }' -H 'content-type: text/plain;' http://127.0.0.1:8332/
+
+コマンド2-4-6　getbestblockhashを実行
+$ bcit getbestblockhash
+0000000029a30f0ec40c77856c4b62cce935609a934b3f55e183685f67a99940
+
+コマンド2-4-7　JSON-RPCでgetbestblockhashを実行
+$ curl --user bc01:bc01 --data-binary '{"jsonrpc": "1.0", "id":"curltest", "method": "getbestblockhash", "params": [] }' -H 'content-type: text/plain;' http://127.0.0.1:18332/
+{"result":"0000000029a30f0ec40c77856c4b62cce935609a934b3f55e183685f67a99940","error":null,"id":"curltest"}
+
+コマンド2-4-8　bc02でgetbestblockhashを実行
+$ bcit getbestblockhash
+error: Could not locate RPC credentials. No authentication cookie could be found, and RPC password is not set.  See -rpcpassword and -stdinrpcpass.  Configuration file: (/home/bc02/.bitcoin/bitcoin.conf)
+
+コマンド2-4-9　認証情報を指定して実行
+$ bcit -rpcuser=bc01 -rpcpassword=bc01 getbestblockhash
+error: couldn't connect to server: unknown (code -1)
+(make sure server is running and you are connecting to the correct RPC port)
+
+コマンド2-4-10　-testnetを指定して実行
+$ bcit -rpcuser=bc01 -rpcpassword=bc01 -testnet getbestblockhash
+0000000029a30f0ec40c77856c4b62cce935609a934b3f55e183685f67a99940
+
+コマンド2-4-11　bc02用のbitcoin.confファイルの例
+$ cat ~/.bitcoin/bitcoin.conf
+rpcuser=bc01
+rpcpassword=bc01
+testnet=3
+
+コマンド2-4-12　bc02でgetbestblockhashを実行
+$ bcit getbestblockhash
+0000000029a30f0ec40c77856c4b62cce935609a934b3f55e183685f67a99940
+
+コマンド2-4-13　bitcoindの停止
+$ bcit stop
+Bitcoin server stopping
+
+コマンド2-4-14　bcit getblockcoutでブロック高を確認
+$ bcit getblockcount
+1297641

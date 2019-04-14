@@ -1,0 +1,285 @@
+コマンド10-1-1　walletsディレクトリを作成
+$ rm -fr ~/.bitcoin/testnet3/wallets
+$ mkdir -p ~/.bitcoin/testnet3/wallets
+$ chmod 700 ~/.bitcoin/testnet3/wallets
+
+コマンド10-1-2　作業用ディレクトリを作成
+$ mkdir -p ~/work/wallet ; cd ~/work/wallet
+
+コマンド10-1-3　Bitcoin Coreを起動
+$ bitcoind -daemon
+Bitcoin server starting
+
+コマンド10-1-4　wallet.datを確認
+$ ls -ltr ~/.bitcoin/testnet3/wallets
+total 1360
+-rw------- 1 bc01 bc01       0  4月  5 23:32 db.log
+drwx------ 2 bc01 bc01    4096  4月  5 23:33 database
+-rw------- 1 bc01 bc01 1388544  4月  5 23:33 wallet.dat
+
+コマンド10-2-1　ウォレットのダンプを出力
+$ bcit dumpwallet dumpwallet.dat.01
+{
+  "filename": "/home/bc01/work/wallet/dumpwallet.dat.01"
+}
+
+コマンド10-2-2　ウォレットのバックアップを出力
+$ bcit backupwallet backup.dat.01
+
+コマンド10-2-3　ウォレットダンプとバックアップの出力を確認
+$ ls -ltr
+total 1844
+-rw------- 1 bc01 bc01  498403  4月  5 23:35 dumpwallet.dat.01
+-rw------- 1 bc01 bc01 1388544  4月  5 23:35 backup.dat.01
+
+コマンド10-3-1　P2PKHのアドレスを生成
+$ bcit getnewaddress "bob_legacy_01" "legacy"
+mzfPortdXRJCY5fPXaQeLxRh3Ke3AEirVy
+
+コマンド10-3-2　ウォレットのダンプとバックアップを出力
+$ bcit dumpwallet dumpwallet.dat.02
+{
+  "filename": "/home/bc01/work/wallet/dumpwallet.dat.02"
+}
+$ bcit backupwallet backup.dat.02
+
+コマンド10-3-3　P2SH-P2WPKHのアドレスを生成
+$ bcit getnewaddress "bob_p2sh-segwit_01" "p2sh-segwit"
+2N8ywnaEx4jhPsnJH4CdJi8nH5LEfDq85Nm
+
+コマンド10-3-4　P2WPKHのアドレスを生成
+$ bcit getnewaddress "bob_bech32_01" "bech32"
+tb1qgzq0a9s3v5mta5lmu7j52a9ud386esq56z8fw7
+
+コマンド10-3-5　アカウントを一覧表示
+$ bcit listaccounts
+{
+  "bob_bech32_01": 0.00000000,
+  "bob_legacy_01": 0.00000000,
+  "bob_p2sh-segwit_01": 0.00000000
+}
+
+コマンド10-3-6　アカウント名からアドレスを確認
+$ bcit getaddressesbyaccount "bob_legacy_01"
+[
+  "mzfPortdXRJCY5fPXaQeLxRh3Ke3AEirVy"
+]
+$ bcit getaddressesbyaccount "bob_p2sh-segwit_01"
+[
+  "2N8ywnaEx4jhPsnJH4CdJi8nH5LEfDq85Nm"
+]
+$ bcit getaddressesbyaccount "bob_bech32_01"
+[
+  "tb1qgzq0a9s3v5mta5lmu7j52a9ud386esq56z8fw7"
+]
+
+コマンド10-3-7　bit getnewaddressに何も指定せずにアドレスを生成
+$ bcit getnewaddress
+2N6Ef1DJSsui8CtvmZFfdHjQt63Cp7gAgzN
+
+コマンド10-3-8　空のアカウント名を指定してアドレスを確認
+$ bcit getaddressesbyaccount ""
+[
+  "2N6Ef1DJSsui8CtvmZFfdHjQt63Cp7gAgzN"
+]
+
+コマンド10-3-9　アカウントリストを確認
+$ bcit listaccounts
+{
+  "": 0.00000000,
+  "bob_bech32_01": 0.00000000,
+  "bob_legacy_01": 0.00000000,
+  "bob_p2sh-segwit_01": 0.00000000
+}
+
+コマンド10-3-10　bcit getnewaddressに何も指定せずにアドレスを生成
+$ bcit getnewaddress
+2N3ThERhvnHNefWoiftkR6KeXrqmYAXLFca
+
+コマンド10-3-11　bcit getaddressesbyaccountで確認
+$ bcit getaddressesbyaccount ""
+[
+  "2N3ThERhvnHNefWoiftkR6KeXrqmYAXLFca",
+  "2N6Ef1DJSsui8CtvmZFfdHjQt63Cp7gAgzN"
+]
+
+コマンド10-3-12　バックアップを取得
+$ bcit dumpwallet dumpwallet.dat.03
+{
+  "filename": "/home/bc01/work/wallet/dumpwallet.dat.03"
+}
+$ bcit backupwallet backup.dat.03
+
+コマンド10-3-13　バックアップを確認
+$ ls -ltr
+total 5532
+-rw------- 1 bc01 bc01  498403  4月  5 23:35 dumpwallet.dat.01
+-rw------- 1 bc01 bc01 1388544  4月  5 23:35 backup.dat.01
+-rw------- 1 bc01 bc01  498412  4月  5 23:35 dumpwallet.dat.02
+-rw------- 1 bc01 bc01 1388544  4月  5 23:35 backup.dat.02
+-rw------- 1 bc01 bc01  499438  4月  5 23:38 dumpwallet.dat.03
+-rw------- 1 bc01 bc01 1388544  4月  5 23:38 backup.dat.03
+
+コマンド10-3-14　Bitcoin Coreを停止
+$ bcit stop
+Bitcoin server stopping
+
+コマンド10-4-1　dumpwallet.dat.01の先頭10行を行番号付きで出力
+$ cat -n dumpwallet.dat.01 | head -10
+     1  # Wallet dump created by Bitcoin v0.16.0
+     2  # * Created on 2018-04-05T14:35:00Z
+     3  # * Best block at time of backup was 1291492 (000000000000007d2686347bc6f1db872e75cffab761c725d1d658445335e7cb),
+     4  #   mined on 2018-04-05T14:27:29Z
+     5
+     6  # extended private masterkey: tprv8ZgxMBicQKsPe1VbKiiXmWdYKXpy3D9gRE9NjW6hDrGjoMn2y8Lyrzn46iALo6Gvv9VsiZVaH6C2qbZsuvuyMipEj3StJYZfhpWzL8tRkAW
+     7
+     8  cNiJo4XvSf4TFJ64dzdQqdQWzJPsWcpmysXchw6fsLbxRA2xJ4zD 2018-04-05T14:33:05Z reserve=1 # addr=2N17FPabZcJa7mdotEArxMrdnDkpR9oZKfe hdkeypath=m/0'/0'/859'
+     9  cUuYZoXgnisLqJJV193e6ysoSN1t9NQsi85BA24f8qJ61YGCwYwZ 2018-04-05T14:33:05Z reserve=1 # addr=2NBtetf5SvV5iXbaTyEdg3gNhFDVbeEDzwU hdkeypath=m/0'/0'/39'
+    10  cVnCF48Bgn1d1MHuVADtgUbLNtrLZktZB8HugAUeBgWtkccGzBZu 2018-04-05T14:33:05Z reserve=1 # addr=2MwYJEdUJcBJu8iaPXy9JaPQsTYgVrwzZBX hdkeypath=m/0'/0'/616'
+
+コマンド10-4-2　「m/0’/0’/0’」を確認
+$ cat dumpwallet.dat.01 | grep "m\/0'\/0'\/0'"
+cRPyty8xM7FdwFdPg2yLL2EmRNauWkbmxRjq3ZLUNyfBSdYDtLyw 2018-04-05T14:33:05Z reserve=1 # addr=2N7bjdCvW2gqmJ9W3U75W9rAEirMgvfpK68 hdkeypath=m/0'/0'/0'
+
+コマンド10-4-3　dumpwallet.dat.02の「m/0’/0’/0’」を確認
+$ cat dumpwallet.dat.02 | grep "m\/0'\/0'\/0'"
+cRPyty8xM7FdwFdPg2yLL2EmRNauWkbmxRjq3ZLUNyfBSdYDtLyw 2018-04-05T14:33:05Z label=bob_legacy_01 # addr=mzfPortdXRJCY5fPXaQeLxRh3Ke3AEirVy hdkeypath=m/0'/0'/0'
+
+コマンド10-4-4　「m/0’/1’/0’」を確認
+$ cat dumpwallet.dat.01 | grep "m\/0'\/1'\/0'"
+cQFkNLrYdU35cuw41xCFGbtgwyHyorc8EDszMvEnTJxDzzooFxJL 2018-04-05T14:33:05Z reserve=1 # addr=2NFGi663p9hYsVVyPSgqCxKGKrKuNUyCnau hdkeypath=m/0'/1'/0'
+
+コマンド10-4-5　02時点と03時点の「m/0’/0’/2’」の違いを確認
+$ cat dumpwallet.dat.02 | grep "m\/0'\/0'\/2'"
+cUYhMkzA8joDpGwHhgTap4v9ZuF5KzsNYfsqCmRB6xzqBkXKn56e 2018-04-05T14:33:05Z reserve=1 # addr=2NA3PLPeG8uR3fXVbcKx4kRcdsWhJXAYx9R hdkeypath=m/0'/0'/2'
+$ cat dumpwallet.dat.03 | grep "m\/0'\/0'\/2'"
+cUYhMkzA8joDpGwHhgTap4v9ZuF5KzsNYfsqCmRB6xzqBkXKn56e 2018-04-05T14:33:05Z label=bob_bech32_01 # addr=tb1qgzq0a9s3v5mta5lmu7j52a9ud386esq56z8fw7 hdkeypath=m/0'/0'/2'
+
+コマンド10-4-6　01時点の「address_index’」の最大値を確認
+$ cat dumpwallet.dat.01 | grep "hdkeypath=m\/0'\/0'\/999"
+cUaUaD5DC3iEBxkNqGKHJWi1Nt1Rg4t3iLrjXW6oxL4hd6RvuxXR 2018-04-05T14:33:05Z reserve=1 # addr=2N164q7WVKTidfQnuzDuZdUxNUmzemxu8Jg hdkeypath=m/0'/0'/999'
+$ cat dumpwallet.dat.01 | grep "hdkeypath=m\/0'\/1'\/999"
+cQPnN4gwZVsGGf4T5TXsrVqPytrdbsPhBHpFmQvFPBX5k972iDjG 2018-04-05T14:33:06Z reserve=1 # addr=2MsNVSUvoKk5bSe8irMQMwZABKfeSLRPm9D hdkeypath=m/0'/1'/999'
+
+コマンド10-4-7　03時点の受け取り用の「address_index’」の最大値を確認
+$ cat dumpwallet.dat.03 | grep "hdkeypath=m\/0'\/0'"  | sed -e "s/^.*hdkeypath=m\/0'\/0'\/\(.*\)'$/\1/g" | sort -n | tail -1
+1003
+
+コマンド10-4-8　「m/0’/0’/1003’」を確認
+$ cat dumpwallet.dat.03 | grep "hdkeypath=m\/0'\/0'\/1003"
+cP7L5f2Fx5bH7viQodLJVYF6YcnQhNZxScAe5GmynLUWTkAQ8voR 2018-04-05T14:38:14Z reserve=1 # addr=2NGAS2KMqx9epzN8j9FroYf3XaDSCcb9RSz hdkeypath=m/0'/0'/1003'
+
+コマンド10-4-9　03時点のおつり用の「address_index’」の最大値を確認
+$ cat dumpwallet.dat.03 | grep "hdkeypath=m\/0'\/1'"  | sed -e "s/^.*hdkeypath=m\/0'\/1'\/\(.*\)'$/\1/g" | sort -n | tail -1
+999
+
+コマンド10-5-1　backup.dat.02をコピー
+$ cp -pr backup.dat.02 ~/.bitcoin/testnet3/wallets/
+$ ls ~/.bitcoin/testnet3/wallets/backup.dat.02
+/home/bc01/.bitcoin/testnet3/wallets/backup.dat.02
+
+コマンド10-5-2　コピーしたファイルを指定してBitcoin Coreを起動
+$ bitcoind -daemon -wallet=backup.dat.02
+Bitcoin server starting
+
+コマンド10-5-3　bcit listwalletsで確認
+$ bcit listwallets
+[
+  " backup.dat.02"
+]
+
+コマンド10-5-4　bcit listaccountsで確認
+$ bcit listaccounts
+{
+  "bob_legacy_01": 0.00000000
+}
+
+コマンド10-5-5　backup.dat.03をコピー
+$ cp -pr backup.dat.03 ~/.bitcoin/testnet3/wallets/
+$ ls ~/.bitcoin/testnet3/wallets/backup*
+/home/bc01/.bitcoin/testnet3/wallets/backup.dat.02
+/home/bc01/.bitcoin/testnet3/wallets/backup.dat.03
+
+コマンド10-5-6　マルチウォレットで起動
+$ bitcoind -printconsole -wallet=backup.dat.02 -wallet=backup.dat.03
+
+************************
+EXCEPTION: St13runtime_error
+CDB: Can't open database backup.dat.03 (duplicates fileid 1000780000fd0000767dac2af45e000000000000 from backup.dat.02)
+bitcoin in AppInit()
+
+コマンド10-5-7　wallet.datを退避
+$ mv ~/.bitcoin/testnet3/wallets/wallet.dat ~/work/wallet
+$ ls ~/.bitcoin/testnet3/wallets/wallet.dat
+ls: cannot access '/home/bc01/.bitcoin/testnet3/wallets/wallet.dat': No such file or directory
+
+コマンド10-5-8　-walletを指定せずに起動
+$ bitcoind -daemon
+Bitcoin server starting
+
+コマンド10-5-9　アドレスを生成
+$ bcit getnewaddress "bob_legacy_02" "legacy"
+mqqQbtKa51UKd9mDMyt9qrr4VPs2Biv9Z9
+$ bcit listaccounts
+{
+  "bob_legacy_02": 0.00000000
+}
+
+コマンド10-5-10　ウォレットのダンプとバックアップを取得
+$ bcit dumpwallet dumpwallet.dat.04
+{
+  "filename": "/home/bc01/work/wallet/dumpwallet.dat.04"
+}
+$ bcit backupwallet backup.dat.04
+$ ls -ltr
+total 7368
+-rw------- 1 bc01 bc01  498403  4月  5 23:35 dumpwallet.dat.01
+-rw------- 1 bc01 bc01 1388544  4月  5 23:35 backup.dat.01
+-rw------- 1 bc01 bc01  498412  4月  5 23:35 dumpwallet.dat.02
+-rw------- 1 bc01 bc01 1388544  4月  5 23:35 backup.dat.02
+-rw------- 1 bc01 bc01  499438  4月  5 23:38 dumpwallet.dat.03
+-rw------- 1 bc01 bc01 1388544  4月  5 23:38 backup.dat.03
+-rw-rw-r-- 1 bc01 bc01     407  4月  5 23:39 diff_01_02.txt
+-rw------- 1 bc01 bc01  498412  4月  6 00:40 dumpwallet.dat.04
+-rw------- 1 bc01 bc01 1376256  4月  6 00:40 backup.dat.04
+
+コマンド10-5-11　Bitcoin Coreを停止
+$ bcit stop
+Bitcoin server stopping
+
+コマンド10-5-12　backup.dat.04をコピー
+$ cp -pr backup.dat.04 ~/.bitcoin/testnet3/wallets/
+$ ls  ~/.bitcoin/testnet3/wallets/backup*
+/home/bc01/.bitcoin/testnet3/wallets/backup.dat.02
+/home/bc01/.bitcoin/testnet3/wallets/backup.dat.03
+/home/bc01/.bitcoin/testnet3/wallets/backup.dat.04
+
+コマンド10-5-13　02と04のマルチウォレットで起動
+$ bitcoind -daemon -wallet=backup.dat.02 -wallet=backup.dat.04
+Bitcoin server starting
+
+コマンド10-5-14　bcit listwalletsで確認
+$ bcit listwallets
+[
+  "backup.dat.02",
+  "backup.dat.04"
+]
+
+コマンド10-5-15　backup.dat.02のアカウントを確認
+$ bcit -rpcwallet=backup.dat.02 listaccounts
+{
+  "bob_legacy_01": 0.00000000
+}
+
+コマンド10-5-16　backup.dat.04のアカウントを確認
+$ bcit -rpcwallet=backup.dat.04 listaccounts
+{
+  "bob_legacy_02": 0.00000000
+}
+
+コマンド10-5-17　HTTPでウォレットを指定する例
+$ curl --user bc01:bc01 --data-binary '{"jsonrpc": "1.0", "id":"curltest", "method": "listaccounts" }' -H 'content-type: text/plain;' http://127.0.0.1:18332/wallet/backup.dat.02
+{"result":{"bob_legacy_01":0.00000000,"bob_p2sh-segwit_01":0.00000000},"error":null,"id":"curltest"}
+$ curl --user bc01:bc01 --data-binary '{"jsonrpc": "1.0", "id":"curltest", "method": "listaccounts" }' -H 'content-type: text/plain;' http:// 127.0.0.1:18332/wallet/backup.dat.04
+{"result":{"bob_legacy_02":0.00000000},"error":null,"id":"curltest"}
+

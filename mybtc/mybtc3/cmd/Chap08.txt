@@ -1,0 +1,20 @@
+コマンド8-10-1　witness programを生成
+$ witness_program=`echo 0279BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798 | hash160` ; echo $witness_program
+751e76e8199196d454941c45d1b3a323f1433bd6
+
+コマンド8-10-2　mainnetのP2WPKHアドレスを生成
+$ echo create bc $witness_program | bash bech32.sh
+bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4
+
+コマンド8-10-3　testnetのP2WPKHアドレスを生成
+$ echo create tb $witness_program | bash bech32.sh
+tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx
+
+コマンド8-10-4　アドレスを検証（成功の場合）
+$ echo verify bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4 | bash bech32.sh
+1
+
+コマンド8-10-5　アドレスを検証（失敗の場合）
+$ echo verify bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t3 | bash bech32.sh
+5
+

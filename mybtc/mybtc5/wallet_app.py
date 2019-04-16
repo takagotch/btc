@@ -85,6 +85,71 @@ class SimpleBC_Gui(Frame):
     if target_message['message_type'] == 'cipher_message':
       try:
         encrypted_key = base64.bb64ecode(binascii.unhexlify(target_message['enc_key']))
+        print('encrypted_key : ', encrypted_key)
+        desrypted_key : self.km.decrypt_with_private_key(encrypted_key)
+        print('decrypted_key : ', banascii.hexlify(decrypted_key).decode('ascii'))
+        #sender = binacii.unhexlify(target_message['sender'])
+        aes_util = AESUtil()
+        decrypted_message = aes_util.decrypt_with_key(base64.b64decode(binascii.unhexlify(target_message['body'])), decrypted_key)
+        print(decrypted_message.decode('utf-8'))
+        """
+        message = {
+          'from' : sender,
+          'message' : decrypted_message.decode('utf-8')
+        }
+        message_4_desplay = pprint.pformat(message, indent=2)
+        """
+        messagebox.showwarning('You received an instant encrypted message !', decrypted_message.decode('utf-8'))
+      except Exception as e:
+        print(e, 'error occurred')
+    elif target_message['message_type'] == 'engraved':
+      sender_name = target_message['sender_alt_name']
+      msg_body = base64.b64decode(binascii.unhexlify(target_message['message'])).decode('utf-8')
+      timestamp = datetime.datetime.fromtimestamp(int(target_message['timestamp']))
+      messagebox.showwarning('You received a new engraved message!', '{} :\n {} \n {}'.format(sender_name, msg_body, timestamp))
+  def update_callback(self):
+    print('update_callback was called!')
+    s_transaction = self.c_core.get_stored_transactions_from_bc()
+    print(s_transactions)
+    self.um.extract_utxos(s_transactions)
+    self.update_balance()
+
+  def update_status(self, info):
+    """
+    """
+    self.status_message.set(info)
+
+  def update_balance():
+
+  def create_menu():
+
+
+  def show_my_address():
+
+  def show_input_dialog_for_key_loading(self):
+
+def main(my_port, c_host, c_port):
+
+  root = Tk()
+  app = SimpleBC_Gui(root, my_port, c_host, c_port)
+  root.mainloop()
+
+if __name__ == '__main__':
+  args = sys.argv
+
+  if len(args) == 4:
+    my_port = int(args[1])
+    c_host = args[2]
+    c_port = int(args[3])
+  else:
+    print('Param Error')
+    print('$ Wallet_App.py <my_port> <core_ip_address> <core_node_port_num>')
+    quit()
+
+  main(my_port, c_host, c_port)
+
+
+
 
 
 

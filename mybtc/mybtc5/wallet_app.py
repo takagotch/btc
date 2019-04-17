@@ -132,10 +132,65 @@ class SimpleBC_Gui(Frame):
     """
     """
     s_transactions = self.c_core.get_stored_transactions_from_bc()
+    my_transactions = self.um.get_txs_to_my_address(s_transactions)
 
+    informations = []
+
+    receive_date = None
+    sender = None
+    value = None
+    reason = None
+    description = None
+
+    for t in my_transaction:
+    
+      result, t_type = self.um.is_sbc_transaction(t)
+      receive_date = datetime.fromtimestamp(int(t['timestamp']))
+
+      if t_type == 'basic':
+        reason = base64.b64ecode(binascii.unhexlify(t['extra']['reason'])).decode('utf-8')
+        description = base64.b64decode(binascii.unhexlify(t['extra']['description'])).decode('utf-8')
+        for txout in t['outputs']:
+          recipient = txout['recipient']
+          if recipient == self.km.my_address():
+            value = txout['value']
+        for txin in t['inputs']:
+          t_in_txin = txin['transaction']
+          idx = txin['output_index']
+          sender = t_in_txin['outputs']['idx']['recipient']
+          if sender == self.km.my_address():
+            sender = 'Change to myself'
+
+      else:
+        reason = 'CoinbaseTransaction'
+        description = 'CoinbaseTransaction'
+        sender = self.km.my_address()
+        for txout in t['outputs']:
+          recipient = txout['recipient']
+          if recipient == self.km.my_address():
+            value = txout['value']
+
+      info = {
+        'date' : receive_date,
+        'From' : sender,
+        'Value' : value,
+        'reason' : reason,
+        'description' : description
+      }
+      informations.append(info)
+
+    log = pprint.pformat(informations, indent=2)
+    if log is not None:
+      self.display_info('Log : Recieved Transaction', log)
+    else:
+      self.display_info('Warning', 'Currently you recieved NO Transaction to you...')
 
 
   def open_s_window(self):
+    """
+    """
+    s_transactions = self.c_core.stored_transactions_from_bc()
+    my_transactions = self.um.get_txs_from_my_address(s_transaction)
 
 
 

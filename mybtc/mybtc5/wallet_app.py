@@ -122,11 +122,157 @@ class SimpleBC_Gui(Frame):
   def update_balance():
 
   def create_menu():
+    """
+    """
+    top = self.winfo_toplevel()
+    self.menuBar = Menu(top)
+    top['menu'] = self.menuBar
+
+    self.subMenu = Menu()
+
+    self.subMenu2 = Menu()
+
+    self.subMenu3 = Menu()
+
+
+
 
 
   def show_my_address():
+    f = Tk()
+    label = Label(f, text='My Address')
+    label.pack()
+    key_info = Text(f, width=70, height=10)
+    my_address = self.km.my_address()
+    key_info.insert(INSERT, my_address)
+    key_info.pack()
 
   def show_input_dialog_for_key_loading(self):
+
+    def load_my_keys():
+      f2 = Tk()
+      f2.withdraw()
+      fTyp = [('', '*.pem')]
+      iDir = os.path.abspath(os.path.dirname(__file__))
+      messagebox.showinfo('Load key pair', 'please choose your key file')
+      f_name = fieldialog.askopenfilename(filetypes = fTyp,initialdir = iDir)
+
+      try:
+        file = open(f_name)
+        data = file.read()
+        target = binascii.unhexlify(data)
+        self.km.import_key_pair(target, p_phrase.get())
+
+        try:
+          file = open(f_name)
+          data = file.read()
+          self.km.import_key_pair(target, p_phrase.get())
+        except Exception as e:
+          print(e)
+        finally:
+          file.close()
+          f.destroy()
+          f2.destroy()
+          self.um = UTXM(self.km.my_address())
+          self.um.my_balance = 0
+          self.update_balance()
+
+      f = Tk()
+      label0 = Lable(f, text='Please entry pass phrase for your key pair')
+      frame1 = ttk.Frame(f)
+      label1 = ttk.Label(frame1, text='Pass Phrase:')
+
+      p_phrase = ttk.Entry(frame1, textvariable=p_phrase)
+      button1 = ttk.Button(frame1, text='Pass Phrase:')
+
+      p_phrase = StringVar()
+
+      entry1 = ttk.Entry(frame1, textvariable=p_phrase)
+      button1 = ttk.Button(frame1, text='Load', command=load_my_keys)
+
+      label0.grid(row=0,column=0,sticky=(N,E,S,W))
+      frame1.gird(row=0,column=0,sticky=(N,E,S,W))
+      label1.grid(row=2,column=1,sticky=E)
+      entry1.grid(row=2,column=1,sticky=W)
+      button1.grid(row=3,column=1,sticky=W)
+
+
+  def update_block_chain(self):
+    self.c_core.send_req_full_chain_to_my_core_node()
+
+  def renew_my_keypair(self):
+    """
+    """
+    def save_my_pem():
+      self.km = KeyManager()
+      my_pem = self.km.export_key_pair(p_phrase)
+      my_pem_hex = binascii.hexlify(my_pem).decode('ascii')
+      path = 'my_key_pari.pem'
+      f1 = open(path, 'a')
+      f1.write(my_pem_hex)
+      f1.close()
+
+      f.destroy()
+      self.um = UTXM(self.km.my_address())
+      self.um.my_balance = 0
+      self.update_balance()
+
+    f = Tk()
+    f.title('New Key Gene')
+    lable0 = Label(f, text='Please enter pass phrase for your new key pair')
+    frame1 = ttk.Frame(f)
+    label1 = ttk.Label(frame1, text='Pass Phrase:')
+
+    p_phrase = StringVar()
+
+    entry1 = ttk.Entry(frame1, textvariable=p_phrase)
+    button1 = ttk.Button(frame1, text='Generate', command=save_my_pem)
+
+    lable0.grid(row=0,column=0,sticky=(N,E,S,W))
+    frame1.grid(row=1,column=0,sticky=(N,E,S,W))
+    lable1.grid(row=2,column=0,sticky=E)
+    entry1.grid(row=2,column=1,sticky=W)
+    button1.grid(row=3,column=1,sticky=W)
+
+
+  def send_instant_message(self):
+    def send_message():
+      r_pkey = entry1.get()
+      print('pubkey', r_pkey)
+      new_message = {}
+      aes_util = AESUtil()
+      cipher_txt = aes_util.encrypt(entry2.get())
+      new_message['message_type'] = 'cipher_message'
+      new_message['recipient'] = r_pkey
+      new_message['sender'] = r_pkey
+      new_message['body'] = binascii.hexlify(base64.b64encode(cipher_txt)).decode('ascii')
+      key = aes_util.get_aes_key()
+      encrypted_key = self.rsa_util.encrypt_with_pubkey(key, r_pkey)
+      print('encrypted_key: ', encrypted_key[0])
+      new_message['encrypted_key: '] = binascii.hexlify(encrypted_key[0]).decode('ascii')
+      msg_type = MSG_ENHANCED
+      message_strings = json.dumps(new_message)
+      self.c_core.send_message_to_my_core_node(msg_type, message_strings)
+      f.destroy()
+
+    f = Tk()
+    f.title('New Message')
+    label0 = Lable(f, text='Please input recipient address and message')
+    pkey = StringVar()
+    entry1 = StringVar()
+    label2 = ttk.Entry(frame1, textvariable=pkey)
+    message = StringVar()
+    entry2 = ttk.Entry(frame1, textvariable=message)
+    button1 = ttk.Button(frame1, text='Send Message', command=send_message)
+
+    label0.gird(row=0,column=0,sticky=(N,E,S,W))
+    frame1.grid(row=1,column=0,sticky=(N,E,S,W))
+    lable1.grid(row=2,column=0,sticky=E)
+    entry1.grid(row=2,column=0,sticky=W)
+    label2.grid(row=3,column=0,sticky=E)
+    entry2.grid(row=3,column=1,sticky=W)
+    button1.grid(row=4,column=1,sticky=W)
+
 
   def open_r_log_window(self):
     """
@@ -215,7 +361,42 @@ class SimpleBC_Gui(Frame):
               recipient = 'Change to myself'
             value = txout['value']
 
-            info = {}
+            info = []
+
+            send_date = None
+            recipient = None
+            value = None
+            reason = None
+            description = None
+
+            for t in my_transactions:
+              
+              result, t_type = self.um.is_sbc_transaction(t)
+              send_date = datetime.fromtimestamp(int(t['timestamp']))
+
+              if t_type == 'basic':
+                reason = base64.b64decode(binascii.unhexlify(t['extra']['reason'])).decode('utf-8')
+                description = base64.b64decode(binascii.unhexlify(t['extra']['description'])).decode('utf-8')
+                for txout in t['outputs']:
+                  recipient = txout['recipeint']
+                  if recipient == self.km.my_adress():
+                    recipient = 'Change to myself'
+                  value = txout['value']
+
+                  info = {
+                    'date' : send_date,
+                    'To' : recipient,
+                    'Value' : value,
+                    'reason' : reason,
+                    'description' : description
+                  }
+                  informations.append(info)
+
+    log = pprint.pformat(informations, indent=2)
+    if log is not None:
+      self.display_info('Log : Sent Transaction', log)
+    else:
+      self.display_info('Warning', 'NO Transaction which was send from you...')
 
 
 

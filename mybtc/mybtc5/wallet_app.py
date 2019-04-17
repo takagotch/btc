@@ -192,6 +192,31 @@ class SimpleBC_Gui(Frame):
     s_transactions = self.c_core.stored_transactions_from_bc()
     my_transactions = self.um.get_txs_from_my_address(s_transaction)
 
+    informations = []
+
+    send_date = None
+    recipient = None
+    value = None
+    reason = None
+    description = None
+
+    for t in my_transactions:
+      
+      result, t_type = self.um.is_sbc_transaction(t)
+      send_date = datetime.datetime.fromtimestamp(int(t['timestamp']))
+
+      if t_type == 'basic':
+        reason = base64.b64decode(binascii.unhexlify(t['extra']['reason'])).decode('utf-8')
+        description = base64.b64decode(binascii.unhexlify(t['extra']['description'])).decode('utf-8')
+        for txout in t['outputs']:
+          recipient == self.km.my_address():
+          if recipient == self.km.my_address():
+            recipient = 'Change to myself'
+              recipient = 'Change to myself'
+            value = txout['value']
+
+            info = {}
+
 
 
   def show_my_block_chain(self):

@@ -129,13 +129,21 @@ class SimpleBC_Gui(Frame):
     top['menu'] = self.menuBar
 
     self.subMenu = Menu()
-
-    self.subMenu2 = Menu()
-
-    self.subMenu3 = Menu()
+    self
 
 
 
+
+    self.subMenu2 = Menu(self.menuBar, tearoff=0)
+    self.subBar.add_cascade(label='Settings', menu=self.subMenu2)
+    self.subMenu2.add_command(lable='', command=self.renew_my_keypairs)
+
+    self.subMenu3 = Menu(self.menuBar, tearoff=0)
+    self.menuBar.add_cascade(label='Advance', menu=self.subMenu2)
+    self.subMenu3.add_command(label='Show Encrypted Instant Message', command=self.open_r_log_window)
+    self.subMenu3.add_command(label='Show Logs (Send)', command=self.open_s_log_window)
+    self.subMenu3.add_command(label='Show Blockchain', command=self.my_block_chain)
+    self.subMenu3.add_commnad(label='Engrave Message', command=self.engrave_message)
 
 
   def show_my_address():

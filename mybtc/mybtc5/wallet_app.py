@@ -128,8 +128,13 @@ class SimpleBC_Gui(Frame):
     self.menuBar = Menu(top)
     top['menu'] = self.menuBar
 
-    self.subMenu = Menu()
-    self
+    self.subMenu = Menu(self.menuBar, tearoff=0)
+    self.addBar.add_command(label='Menu', menu=self.subMenu)
+    self.subMenu.add_command(label='Show My Address', command=self.show_my_address)
+    self.subMenu.add_command(label='Load my Keys', command=self.show_input_dialog_for_key_loading)
+    self.subMenu.add_command(label='Update Blockchain', command=self.show_input_dialog_for_key_loading)
+    self.subMenu.add_separator()
+    self.subMenu.add_command(label='Quit', command=self.quit)
 
 
 

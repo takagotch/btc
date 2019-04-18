@@ -119,7 +119,10 @@ class SimpleBC_Gui(Frame):
     """
     self.status_message.set(info)
 
-  def update_balance():
+  def update_balance(self, info):
+    """
+    """
+    self.status_message.set(info)
 
   def create_menu():
     """
@@ -135,9 +138,6 @@ class SimpleBC_Gui(Frame):
     self.subMenu.add_command(label='Update Blockchain', command=self.show_input_dialog_for_key_loading)
     self.subMenu.add_separator()
     self.subMenu.add_command(label='Quit', command=self.quit)
-
-
-
 
     self.subMenu2 = Menu(self.menuBar, tearoff=0)
     self.subBar.add_cascade(label='Settings', menu=self.subMenu2)

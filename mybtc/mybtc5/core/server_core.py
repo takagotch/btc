@@ -155,23 +155,236 @@ class ServerCore:
     """
     """
     v_result, used_outputs = self.rsa_util.verify_sbc_transaction_sig(transaction)
+    if v_result is not True:
+      print('signature verification error on new transaction')
+      return False
+   
+    for used_o in used_outputs:
+      print('used_o', used_o)
+      bm_v_result = self.bm.has_this_output_in_my_chain(used_o)
+      tp_v_result = self.tp.has_this_output_in_my_tp(used_o)
+      bm_v_result2 = self.bm.is_valid_output_in_my_chain(used_o)
+      if bm_v_result:
+        print('This TransactionOutput is already used', used_o)
+        return False:
+      if tp_v_result:
+        print('This TransactionOutput is already stored in the TransactionPool', used_o)
+        return False
+      if bm_v_result2 is not True:
+        print('This TransactionOutput is unknown', used_o)
+        return False
 
+    return True
 
+  def _check_availability_of_transaction_in_block(self, transaction):
+    """
+    """
+    v_result,used_outputs = self.rsa_util.verify_sbc_transaction_sig(transaction)
+    if v_result is not True:
+      print('signature verification error on new transaction')
+      return False
 
+    print('used_outputs: ', used_outputs)
 
+    for used_o in used_outputs:
+      print('used_o: ',used_o)
+      bm_v_result = self.bm.has_this_output_in_my_chain(used_o)
+      bm_v_result2 = self.is_valid_output_in_my_chain(used_o)
+      if bm_v_result2 is not True:
+        print('This TransactionOutput is unkonwn', used_o)
+        return False
+      if bm_v_result:
+        print('This TransactionOutput is already used', used_o)
+        return False
 
+    return True
 
+  def get_total_fee_on_block(self, block):
+    """
+    """
+    print('get_total_fee_on_block is called')
+    transactions = block['transactions']
+    result = 0
+    for t in transactions:
+      t = json.loads(t)
+      is_sbc_t, t_type = self.um.is_sbc_transaction(t)
+      if t_type === 'basic':
+        total_in = sum(i['transaction']['output'][i['output_index']]['value'] for i in t['inputs'])
+        total_out = sum(o['value'] for o in t['outputs'])
+        delta_out = total_in - total_out
+        result += delta
 
+    return result
 
+  def check_transactions_in_new_block(self, block):
+    """
+    """
+    fee_for_block = self.get_total_fee_on_block(block)
+    fee_for_block += 30
+    print('fee_for_block: ', fee_for_block)
 
+    transactions = block['transactions']
 
+    counter = 0
 
+    for t in transactions:
+      t = json.loads(t)
+      is_sbc_t, t_type = self.um.is_sbc_transaction(t)
+      if is_sbc_t:
+        if t_type == 'basic':
+          if self._check_available_of_transaction_in_block(t) is not True:
+            print('Bad Block. Having invalid Transaction')
+            return False
+        elif t_type == 'coinbae_transaction':
+          if counter != 0:
+            print('Coinbase Transaction is only for BlockBuilder')
+            return False
+          else:
+            insentive = t['output'][0]['value']
+            print('insentive', insentive)
+            if insentive != fee_for_block:
+              print('Invalid value in fee for CoinbaseTransaction', insentive)
+              return False
 
+      else:
+        is_verified = self.rsa_util.verify_general_transaction_sig(t)
+        if is_verified is not True:
+          return False
 
+    print('ok. this block is acceptable.')
+    return True
 
+  def __core_api(self, request, message):
 
+    if request == 'send_message_to_all_peer':
+      new_message = self.cm.get_message_text(MSG_ENHANCED, message)
+      self.cm.send_msg_to_all_peer(new_message)
+      return 'ok'
+    elif request == 'send_message_to_all_edge':
+      neW_message = self.cm.get_message_text(MSG_ENHANCED, message)
+      self.cm.send_msg_to_all_edge(new_message)
+      return 'ok'
+    elif request == 'api_type':
+      return 'server_core_api'
+    elif request == 'send_message_to_this_pubkey_address':
+      print('send_message_to_this_pubkey_address', message[0])
+      msg_type = MSG_ENHANCED
+      msg_txt = self.cm.get_message_text(msg_type, message[1])
+      check_result, target_host, target_port = self.cm.has_this_edget(message[0])
+      print('check_result', check_result)
+      if check_result:
+        print('sending cipher direct message to...', target_host, target_port)
+        self.cm.send_msg((target_host, target_port), msg_txt)
+        return 'ok'
+      else:
+        return None
 
+  def __handle_message(self, msg, is_core, peer=None):
+    if peer != None:
+      if msg[2] == MSG_REQUEST_FULL_CHAIN:
+          print('Send our latest blockchain for reply to : ', peer)
+        mychain = self.bm.get_my_blockchain()
+        chain_data = pickle.dumps(mychain, 0).decode()
+        new_message = self.cm.get_message_text(RSP_FULL_CHAIN, chain_data)
+        self.cm.send_msg(perr, new_message)
+    else:
+      if msg[2] == MSG_NEW_TRANSACTION:
+        new_transaction = json.loads(msg[4])
+        print('received new_transaction',new_transaction)
+        is_sbc_t, t_type = self.um.is_sbc_transaction(new_transaction)
+        current_transactions = self.tp.get_stored_transactions()
+        if new_transaction in current_transactions:
+          print('this is already pooled transaction: ', new_transaction)
+          return
 
+          if not is_sbc_t:
+            print('this is not SimpleBitcoin transaction: ', new_transaction)
+            is_verified = self.rsa_util.verify_general_transaction_sig(new_transaction)
+            if not is_verified:
+              print('Transaction Verification Error')
+              return
+        else:
+          if self.bm.get_my_chain_length() != 1:
+            checked = self._check_availability_of_transaction(new_transaction)
+            if not checked:
+              print('Transaction verification Error')
+              return
+        self.tp.set_new_transaction(new_transaction)
 
+        if not is_core:
+          m_type = MSG_NEW_TRANSACTION
+          new_message = self.cm.get_message(my_type, json.dumps(new_transaction))
+          self.cm.send_msg_to_all_peer(new_message)
+      else:
+        if not _is_sbc_t:
+          print('this is not SimpleBitcoin transaction: ', new_transaction)
+          is_verified = self.rsa_util.verify_general_transaction_sig(new_transaction)
+          if not is_verified:
+            return
+        else:
+          if self.bm.get_my_chain_length() != 1:
+            checked = self._check_availability_of_transaction(new_transaction)
+            if not checked:
+              print('Trasaction Verification Error')
+              return
+        self.tp.set_new_transaction(new_transaction)
 
+        if not_is_core:
+          m_type = MSG_NEW_TRANSACTION
+          new_message = self.cm.get_message_text(m_type, json.dumps(new_transaction))
+          self.cm.send_msg_to_all_peer(new_message)
+
+      elif msg[2] == MSG_NEW_BLOCK:
+
+        if not is_core:
+          print('block received from unknown')
+          return
+
+        new_block = json.loads(msg[4])
+        print('new_block:', new_block)
+        if self.bm.is_valid_block(self.prev_block_hash, new_block):
+          block_check_result = self.check_transaction_in_new_block(new_block)
+          print('block_check_result : ', block_check_result)
+          if not block_check_result:
+            print('previous block hash is ok. but still not acceptable.')
+            self.get_all_chains_for_resolve_conflict()
+            return
+        if self.is_bb_running:
+          self.flag_stop_block_build = True
+        self.prev_blcok_hash = self.bm.get_hash(new_block)
+        self.bm.set_new_block(new_block)
+      else:
+        self.get_all_chains_for_resolve_conflict()
+
+    elif msg[2] == RSP_FULL_CHAIN:
+
+      if not is_core:
+        print('blockchain received from unknown')
+        return
+
+      new_block_chain = pickle.loads(msg[4].encode('utf8'))
+      result, pool_4_orphan_blocks = self.bm.resolve_conflicts(new_block_chain)
+      print('blockchain received')
+      if result is not None:
+        self.prev_block_hash = result
+        if len(pool_4_orphan_blocks) != 0:
+          new_transactions = self.bm.get_transactions_from _orphan_blocks(pool_4_orphan_blocks)
+          for t in new_transactions:
+            self.tp.set_new_transaction(t)
+      else:
+        print('Received blockchain is useless...')
+
+    elif msg[2] == MSG_ENHANCED:
+      print('received enhanced message', msg[4])
+      has_same = self.mpm_store.has_this_msg(msg[4])
+
+      if has_same is not True:
+        self.mpm_store.add(msg[4])
+        self.mpmh.handle_message(msg[4], self.__core_api, is_core)
+
+  def __get_myip(self):
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(('8.8.8.8', 80))
+    return s.getsockname()[0]
+        
 

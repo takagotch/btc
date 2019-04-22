@@ -1,0 +1,500 @@
+コマンド12-1-1　Bech32のアドレスを取得して変数bobaddrを上書き
+$ bcit getaddressesbyaccount "bob_bech32_01"
+[
+  "tb1qgzq0a9s3v5mta5lmu7j52a9ud386esq56z8fw7"
+]
+$ bobaddr=tb1qgzq0a9s3v5mta5lmu7j52a9ud386esq56z8fw7
+
+コマンド12-1-2　bobaddrに送金
+$ bcit sendtoaddress $bobaddr 0.1
+0eec3e77ad7859f3d47c75670f475eaba196744d0e4ba51fc207195fe18bb816
+
+コマンド12-1-3　TXIDを変数に格納
+$ TXID=0eec3e77ad7859f3d47c75670f475eaba196744d0e4ba51fc207195fe18bb816
+
+コマンド12-1-4　トランザクションを確認
+$ bcit decoderawtransaction `bcit getrawtransaction $TXID`
+{
+  "txid": "0eec3e77ad7859f3d47c75670f475eaba196744d0e4ba51fc207195fe18bb816",
+  "hash": "0eec3e77ad7859f3d47c75670f475eaba196744d0e4ba51fc207195fe18bb816",
+  "version": 2,
+  "size": 220,
+  "vsize": 220,
+  "locktime": 1291871,
+  "vin": [
+    {
+      "txid": "10251f035634a25f1c8fe5801e67d0e2db1e7a83481d8f5e5745c127a5c7e2e9",
+      "vout": 1,
+      "scriptSig": {
+        "asm": "3045022100e4d02c3604d7fdf2b6652888e4e87ab1cda2200c9a00e11a49c975771dc1f492022022a90292a2b165e774c57f03e407a5cff1f8e800e4c28062ad3916d2270bed74[ALL] 02e8fe565a5bdef860c7734bd5f74edcfd6dcfb205678145c08bf5e1deb0cac01c",
+        "hex": "483045022100e4d02c3604d7fdf2b6652888e4e87ab1cda2200c9a00e11a49c975771dc1f492022022a90292a2b165e774c57f03e407a5cff1f8e800e4c28062ad3916d2270bed74012102e8fe565a5bdef860c7734bd5f74edcfd6dcfb205678145c08bf5e1deb0cac01c"
+      },
+      "sequence": 4294967294
+    }
+  ],
+  "vout": [
+    {
+      "value": 0.39999779,
+      "n": 0,
+      "scriptPubKey": {
+        "asm": "0 167751a35b69413b5d2e96c407803cd8f499917e",
+        "hex": "0014167751a35b69413b5d2e96c407803cd8f499917e",
+        "reqSigs": 1,
+        "type": "witness_v0_keyhash",
+        "addresses": [
+          "tb1qzem4rg6md9qnkhfwjmzq0qpumr6fnyt7hjnwm0"
+        ]
+      }
+    },
+    {
+      "value": 0.10000000,
+      "n": 1,
+      "scriptPubKey": {
+        "asm": "0 4080fe96116536bed3fbe7a54574bc6c4facc014",
+        "hex": "00144080fe96116536bed3fbe7a54574bc6c4facc014",
+        "reqSigs": 1,
+        "type": "witness_v0_keyhash",
+        "addresses": [
+          "tb1qgzq0a9s3v5mta5lmu7j52a9ud386esq56z8fw7"
+        ]
+      }
+    }
+  ]
+}
+
+コマンド12-1-5　UTXOを確認
+$ bcit decoderawtransaction `bcit getrawtransaction 10251f035634a25f1c8fe5801e67
+d0e2db1e7a83481d8f5e5745c127a5c7e2e9`
+{
+  "txid": "10251f035634a25f1c8fe5801e67d0e2db1e7a83481d8f5e5745c127a5c7e2e9",
+  "hash": "10251f035634a25f1c8fe5801e67d0e2db1e7a83481d8f5e5745c127a5c7e2e9",
+  "version": 2,
+  "size": 226,
+  "vsize": 226,
+  "locktime": 0,
+  "vin": [
+    {
+      "txid": "2d716a0aa0d650ffb76dd8ec7d9449488e9cfdcea046d91de47c9e3eace4940b",
+      "vout": 0,
+      "scriptSig": {
+        "asm": "3045022100e5fb50f84338c3a8fcbfef6d5548ce819d19d02cd132e7d9ebe2b6ca9028287e022077aeab6e9e28b66fff48a1b5cb30767bcc003f39c7951bcfdd7c0547b8b2a569[ALL] 02e8fe565a5bdef860c7734bd5f74edcfd6dcfb205678145c08bf5e1deb0cac01c",
+        "hex": "483045022100e5fb50f84338c3a8fcbfef6d5548ce819d19d02cd132e7d9ebe2b6ca9028287e022077aeab6e9e28b66fff48a1b5cb30767bcc003f39c7951bcfdd7c0547b8b2a569012102e8fe565a5bdef860c7734bd5f74edcfd6dcfb205678145c08bf5e1deb0cac01c"
+      },
+      "sequence": 4294967295
+    }
+  ],
+  "vout": [
+    {
+      "value": 0.04000000,
+      "n": 0,
+      "scriptPubKey": {
+        "asm": "OP_DUP OP_HASH160 eca8ab37ef6fef7c7ee10323a8a3bb3101c1731e OP_EQUALVERIFY OP_CHECKSIG",
+        "hex": "76a914eca8ab37ef6fef7c7ee10323a8a3bb3101c1731e88ac",
+        "reqSigs": 1,
+        "type": "pubkeyhash",
+        "addresses": [
+          "n36Hpe9L76wHX8qNgkL8sezjLc1PMeFAgw"
+        ]
+      }
+    },
+    {
+      "value": 0.50000000,
+      "n": 1,
+      "scriptPubKey": {
+        "asm": "OP_DUP OP_HASH160 d20303f9aa73ef80862edd9384a70d4e7b97820f OP_EQUALVERIFY OP_CHECKSIG",
+        "hex": "76a914d20303f9aa73ef80862edd9384a70d4e7b97820f88ac",
+        "reqSigs": 1,
+        "type": "pubkeyhash",
+        "addresses": [
+          "mzfPortdXRJCY5fPXaQeLxRh3Ke3AEirVy"
+        ]
+      }
+    }
+  ]
+}
+
+コマンド12-1-6　bcit validateaddressで確認
+$ bcit validateaddress tb1qzem4rg6md9qnkhfwjmzq0qpumr6fnyt7hjnwm0
+{
+  "isvalid": true,
+  "address": "tb1qzem4rg6md9qnkhfwjmzq0qpumr6fnyt7hjnwm0",
+  "scriptPubKey": "0014167751a35b69413b5d2e96c407803cd8f499917e",
+  "ismine": true,
+  "iswatchonly": false,
+  "isscript": false,
+  "iswitness": true,
+  "witness_version": 0,
+  "witness_program": "167751a35b69413b5d2e96c407803cd8f499917e",
+  "pubkey": "036029784a3b689efb988ede9c63e7ad1701e5805f27c202609e7524a5f656e2fe",
+  "timestamp": 1522938785,
+  "hdkeypath": "m/0'/1'/0'",
+  "hdmasterkeyid": "b961b11d31000c63846cb0460f2b8cccdbf8b8a7"
+}
+
+コマンド12-1-7　pubKeyHashを計算
+$ bcit validateaddress $bobaddr | grep pubkey
+  "pubkey": "035f167f770d560ba5cba889c8b1bb6eadf82aee14ee743b831af3528878eb19a1",
+$ echo 035f167f770d560ba5cba889c8b1bb6eadf82aee14ee743b831af3528878eb19a1 | hash160
+4080fe96116536bed3fbe7a54574bc6c4facc014
+
+コマンド12-1-8　変数を設定
+$ VOUT=1
+$ ScriptPubKey=00144080fe96116536bed3fbe7a54574bc6c4facc014
+$ aliceaddr=n36Hpe9L76wHX8qNgkL8sezjLc1PMeFAgw
+
+コマンド12-1-9　未署名トランザクションを生成
+$ RAW_TX=`bcit createrawtransaction "[{\"txid\":\"$TXID\",\"vout\":$VOUT}]" "{\"$aliceaddr\":0.04, \"$bobaddr\":0.05}"`
+
+コマンド12-1-10　未署名トランザクションを確認
+$ bcit decoderawtransaction $RAW_TX
+{
+  "txid": "a71168cc7bf271d9c35b85d3f844bf6fc361265180d293cd584f4b231431c570",
+  "hash": "a71168cc7bf271d9c35b85d3f844bf6fc361265180d293cd584f4b231431c570",
+  "version": 2,
+  "size": 116,
+  "vsize": 116,
+  "locktime": 0,
+  "vin": [
+    {
+      "txid": "0eec3e77ad7859f3d47c75670f475eaba196744d0e4ba51fc207195fe18bb816",
+      "vout": 1,
+      "scriptSig": {
+        "asm": "",
+        "hex": ""
+      },
+      "sequence": 4294967295
+    }
+  ],
+  "vout": [
+    {
+      "value": 0.04000000,
+      "n": 0,
+      "scriptPubKey": {
+        "asm": "OP_DUP OP_HASH160 eca8ab37ef6fef7c7ee10323a8a3bb3101c1731e OP_EQUALVERIFY OP_CHECKSIG",
+        "hex": "76a914eca8ab37ef6fef7c7ee10323a8a3bb3101c1731e88ac",
+        "reqSigs": 1,
+        "type": "pubkeyhash",
+        "addresses": [
+          "n36Hpe9L76wHX8qNgkL8sezjLc1PMeFAgw"
+        ]
+      }
+    },
+    {
+      "value": 0.05000000,
+      "n": 1,
+      "scriptPubKey": {
+        "asm": "0 4080fe96116536bed3fbe7a54574bc6c4facc014",
+        "hex": "00144080fe96116536bed3fbe7a54574bc6c4facc014",
+        "reqSigs": 1,
+        "type": "witness_v0_keyhash",
+        "addresses": [
+          "tb1qgzq0a9s3v5mta5lmu7j52a9ud386esq56z8fw7"
+        ]
+      }
+    }
+  ]
+}
+
+コマンド12-1-11　署名を付与し、そのトランザクションを変数に格納
+$ bcit signrawtransaction $RAW_TX "[{\"txid\":\"$TXID\",\"vout\":$VOUT,\"scriptPubKey\":\"$ScriptPubKey\", \"amount\":0.1}]" "[\"`bcit dumpprivkey $bobaddr`\"]"
+{
+  "hex": "0200000000010116b88be15f1907c21fa54b0e4d7496a1ab5e470f67757cd4f35978ad773eec0e0100000000ffffffff0200093d00000000001976a914eca8ab37ef6fef7c7ee10323a8a3bb3101c1731e88ac404b4c00000000001600144080fe96116536bed3fbe7a54574bc6c4facc01402473044022027e87db4db0958fa0f9670583c72affaea4523a603d486c2e88844147726bcb902201e0ed084f502ce3de7b3fd6b07611b402d5b4bc2928684fe9c659f626a26ace40121035f167f770d560ba5cba889c8b1bb6eadf82aee14ee743b831af3528878eb19a100000000",
+  "complete": true
+}
+
+$ SIGNED_RAW_TX=0200000000010116b88be15f1907c21fa54b0e4d7496a1ab5e470f67757cd4f35978ad773eec0e0100000000ffffffff0200093d00000000001976a914eca8ab37ef6fef7c7ee10323a8a3bb3101c1731e88ac404b4c00000000001600144080fe96116536bed3fbe7a54574bc6c4facc01402473044022027e87db4db0958fa0f9670583c72affaea4523a603d486c2e88844147726bcb902201e0ed084f502ce3de7b3fd6b07611b402d5b4bc2928684fe9c659f626a26ace40121035f167f770d560ba5cba889c8b1bb6eadf82aee14ee743b831af3528878eb19a100000000
+
+コマンド12-1-12　署名済みトランザクションを確認
+$ bcit decoderawtransaction $SIGNED_RAW_TX
+{
+  "txid": "a71168cc7bf271d9c35b85d3f844bf6fc361265180d293cd584f4b231431c570",
+  "hash": "740669d45eeb0d35e0ef580253ff1e6c49b71bec88dbb41e55571a540e5d88c9",
+  "version": 2,
+  "size": 225,
+  "vsize": 144,
+  "locktime": 0,
+  "vin": [
+    {
+      "txid": "0eec3e77ad7859f3d47c75670f475eaba196744d0e4ba51fc207195fe18bb816",
+      "vout": 1,
+      "scriptSig": {
+        "asm": "",
+        "hex": ""
+      },
+      "txinwitness": [
+        "3044022027e87db4db0958fa0f9670583c72affaea4523a603d486c2e88844147726bcb902201e0ed084f502ce3de7b3fd6b07611b402d5b4bc2928684fe9c659f626a26ace401",
+        "035f167f770d560ba5cba889c8b1bb6eadf82aee14ee743b831af3528878eb19a1"
+      ],
+      "sequence": 4294967295
+    }
+  ],
+  "vout": [
+    {
+      "value": 0.04000000,
+      "n": 0,
+      "scriptPubKey": {
+        "asm": "OP_DUP OP_HASH160 eca8ab37ef6fef7c7ee10323a8a3bb3101c1731e OP_EQUALVERIFY OP_CHECKSIG",
+        "hex": "76a914eca8ab37ef6fef7c7ee10323a8a3bb3101c1731e88ac",
+        "reqSigs": 1,
+        "type": "pubkeyhash",
+        "addresses": [
+          "n36Hpe9L76wHX8qNgkL8sezjLc1PMeFAgw"
+        ]
+      }
+    },
+    {
+      "value": 0.05000000,
+      "n": 1,
+      "scriptPubKey": {
+        "asm": "0 4080fe96116536bed3fbe7a54574bc6c4facc014",
+        "hex": "00144080fe96116536bed3fbe7a54574bc6c4facc014",
+        "reqSigs": 1,
+        "type": "witness_v0_keyhash",
+        "addresses": [
+          "tb1qgzq0a9s3v5mta5lmu7j52a9ud386esq56z8fw7"
+        ]
+      }
+    }
+  ]
+}
+
+コマンド12-1-13　署名済みトランザクションを送信
+$ bcit sendrawtransaction $SIGNED_RAW_TXa71168cc7bf271d9c35b85d3f844bf6fc361265180d293cd584f4b231431c570
+
+コマンド12-1-14　Script Witnessesを取得
+$ echo $SIGNED_RAW_TX | sed -e 's/^.*00144080fe96116536bed3fbe7a54574bc6c4facc014\(.*\)00000000$/\1/'
+02473044022027e87db4db0958fa0f9670583c72affaea4523a603d486c2e88844147726bcb902201e0ed084f502ce3de7b3fd6b07611b402d5b4bc2928684fe9c659f626a26ace40121035f167f770d560ba5cba889c8b1bb6eadf82aee14ee743b831af3528878eb19a
+
+コマンド12-2-1　アドレスを変数に格納
+$ bcit getaddressesbyaccount "bob_legacy_01"
+[
+  "mzfPortdXRJCY5fPXaQeLxRh3Ke3AEirVy"
+]
+$ bcit getaddressesbyaccount "alice_legacy_01"
+[
+  "n36Hpe9L76wHX8qNgkL8sezjLc1PMeFAgw"
+]
+$ bobaddr=mzfPortdXRJCY5fPXaQeLxRh3Ke3AEirVy
+$ aliceaddr=n36Hpe9L76wHX8qNgkL8sezjLc1PMeFAgw
+
+コマンド12-2-2　bobとaliceのマルチシグアドレスを生成
+$ bcit addmultisigaddress 2 "[\"$bobaddr\",\"$aliceaddr\"]" "bobalicemultibech32addr" "bech32"
+{
+  "address": "tb1qgrqfu87du7a8x9533awr65xcuxke7t8ljae42x8fxw6ymh4delsqaqpqn8",
+  "redeemScript": "522102e8fe565a5bdef860c7734bd5f74edcfd6dcfb205678145c08bf5e1deb0cac01c210205d9ddeaa34d5f9cb670c152fd2b92c0833a50536ad9bfc91962b9e11c35a67052ae"
+}
+
+コマンド12-2-3　アドレスとRedeem Scriptを変数に格納
+$ bobalicemultiaddr=tb1qgrqfu87du7a8x9533awr65xcuxke7t8ljae42x8fxw6ymh4delsqaqpqn8
+$ bobaliceRedeemScript=522102e8fe565a5bdef860c7734bd5f74edcfd6dcfb205678145c08bf5e1deb0cac01c210205d9ddeaa34d5f9cb670c152fd2b92c0833a50536ad9bfc91962b9e11c35a67052ae
+
+コマンド12-2-4　bobalicemultiaddrに送金してTXIDを変数に格納
+$ bcit sendtoaddress $bobalicemultiaddr 0.1
+d69d5089f7111c0deb4ff8798b033d85ae149a23c6ec35858b161f02a0b77133
+$ TXID=d69d5089f7111c0deb4ff8798b033d85ae149a23c6ec35858b161f02a0b77133
+
+コマンド12-2-5　送金トランザクションを確認
+$ bcit decoderawtransaction `bcit getrawtransaction $TXID`
+{
+  "txid": "d69d5089f7111c0deb4ff8798b033d85ae149a23c6ec35858b161f02a0b77133",
+  "hash": "d69d5089f7111c0deb4ff8798b033d85ae149a23c6ec35858b161f02a0b77133",
+  "version": 2,
+  "size": 527,
+  "vsize": 527,
+  "locktime": 1291877,
+  "vin": [
+    {
+      "txid": "ca0d0b0fc7d561845bc7e0dfb1f80316f6e550143900f20cc1a1720d3bab2917",
+      "vout": 0,
+      "scriptSig": {
+        "asm": "3045022100c2847b4337be62c7078441b3d86996106a9c5c17bfb6bb29c7351bbacbb3d2010220505912f506ab478b6f004f291d7623602b0c42c441fab3cdd3f0ac2cd85de198[ALL] 0205d9ddeaa34d5f9cb670c152fd2b92c0833a50536ad9bfc91962b9e11c35a670",
+        "hex": "483045022100c2847b4337be62c7078441b3d86996106a9c5c17bfb6bb29c7351bbacbb3d2010220505912f506ab478b6f004f291d7623602b0c42c441fab3cdd3f0ac2cd85de19801210205d9ddeaa34d5f9cb670c152fd2b92c0833a50536ad9bfc91962b9e11c35a670"
+      },
+      "sequence": 4294967294
+    },
+    {
+      "txid": "a71168cc7bf271d9c35b85d3f844bf6fc361265180d293cd584f4b231431c570",
+      "vout": 0,
+      "scriptSig": {
+        "asm": "3045022100f828f272cedcdf794e5b268d17751a31b94129464fb76d6e96ed068bfb2474ed022020942ed499fb1515c13288d4491286cea9d93b69258955a3df7ac683bf38dc77[ALL] 0205d9ddeaa34d5f9cb670c152fd2b92c0833a50536ad9bfc91962b9e11c35a670",
+        "hex": "483045022100f828f272cedcdf794e5b268d17751a31b94129464fb76d6e96ed068bfb2474ed022020942ed499fb1515c13288d4491286cea9d93b69258955a3df7ac683bf38dc7701210205d9ddeaa34d5f9cb670c152fd2b92c0833a50536ad9bfc91962b9e11c35a670"
+      },
+      "sequence": 4294967294
+    },
+    {
+      "txid": "10251f035634a25f1c8fe5801e67d0e2db1e7a83481d8f5e5745c127a5c7e2e9",
+      "vout": 0,
+      "scriptSig": {
+        "asm": "304402205b013caab8a1111d0d5625d33cf5b0f1c22487a054ba547277400e2fdb54d27202200f1b89efb6a7b87168d5ff7c44f8b73277bf4bc027bf5625a1a6362c92dcfefb[ALL] 0205d9ddeaa34d5f9cb670c152fd2b92c0833a50536ad9bfc91962b9e11c35a670",
+        "hex": "47304402205b013caab8a1111d0d5625d33cf5b0f1c22487a054ba547277400e2fdb54d27202200f1b89efb6a7b87168d5ff7c44f8b73277bf4bc027bf5625a1a6362c92dcfefb01210205d9ddeaa34d5f9cb670c152fd2b92c0833a50536ad9bfc91962b9e11c35a670"
+      },
+      "sequence": 4294967294
+    }
+  ],
+  "vout": [
+    {
+      "value": 0.10000000,
+      "n": 0,
+      "scriptPubKey": {
+        "asm": "0 40c09e1fcde7ba7316918f5c3d50d8e1ad9f2cff97735518e933b44ddeadcfe0",
+        "hex": "002040c09e1fcde7ba7316918f5c3d50d8e1ad9f2cff97735518e933b44ddeadcfe0",
+        "reqSigs": 1,
+        "type": "witness_v0_scripthash",
+        "addresses": [
+          "tb1qgrqfu87du7a8x9533awr65xcuxke7t8ljae42x8fxw6ymh4delsqaqpqn8"
+        ]
+      }
+    },
+    {
+      "value": 0.01999472,
+      "n": 1,
+      "scriptPubKey": {
+        "asm": "0 08e1057f304ae28e0f7ede8109624eeead68cadc",
+        "hex": "001408e1057f304ae28e0f7ede8109624eeead68cadc",
+        "reqSigs": 1,
+        "type": "witness_v0_keyhash",
+        "addresses": [
+          "tb1qprss2lesft3gurm7m6qsjcjwa6kk3jkuyem3ar"
+        ]
+      }
+    }
+  ]
+}
+
+コマンド12-2-6　witness programを生成
+$ bcit validateaddress $bobalicemultiaddr | grep hex
+  "hex": "522102e8fe565a5bdef860c7734bd5f74edcfd6dcfb205678145c08bf5e1deb0cac01c210205d9ddeaa34d5f9cb670c152fd2b92c0833a50536ad9bfc91962b9e11c35a67052ae",
+$ echo 522102e8fe565a5bdef860c7734bd5f74edcfd6dcfb205678145c08bf5e1deb0cac01c210205d9ddeaa34d5f9cb670c152fd2b92c0833a50536ad9bfc91962b9e11c35a67052ae | xxd -r -p | openssl dgst -sha256 | cut -c10-
+40c09e1fcde7ba7316918f5c3d50d8e1ad9f2cff97735518e933b44ddeadcfe0
+
+コマンド12-2-7　消費するUTXOの情報を変数に設定
+$ VOUT=0
+$ ScriptPubKey=002040c09e1fcde7ba7316918f5c3d50d8e1ad9f2cff97735518e933b44ddeadcfe0
+
+コマンド12-2-8　未署名トランザクションを生成
+$ RAW_TX=`bcit createrawtransaction "[{\"txid\":\"$TXID\",\"vout\":$VOUT}]" "{\"$aliceaddr\":0.04, \"$bobalicemultiaddr\":0.05}"` ; echo $RAW_TX
+02000000013371b7a0021f168b8535ecc6239a14ae853d038b79f84feb0d1c11f789509dd60000000000ffffffff0200093d00000000001976a914eca8ab37ef6fef7c7ee10323a8a3bb3101c1731e88ac404b4c000000000022002040c09e1fcde7ba7316918f5c3d50d8e1ad9f2cff97735518e933b44ddeadcfe000000000
+
+コマンド12-2-9　未署名トランザクションを確認
+$ bcit decoderawtransaction $RAW_TX
+{
+  "txid": "ec2b6076c65b88d2b8acee56dc75839c15bf57175d49bef4171727a93d437651",
+  "hash": "ec2b6076c65b88d2b8acee56dc75839c15bf57175d49bef4171727a93d437651",
+  "version": 2,
+  "size": 128,
+  "vsize": 128,
+  "locktime": 0,
+  "vin": [
+    {
+      "txid": "d69d5089f7111c0deb4ff8798b033d85ae149a23c6ec35858b161f02a0b77133",
+      "vout": 0,
+      "scriptSig": {
+        "asm": "",
+        "hex": ""
+      },
+      "sequence": 4294967295
+    }
+  ],
+  "vout": [
+    {
+      "value": 0.04000000,
+      "n": 0,
+      "scriptPubKey": {
+        "asm": "OP_DUP OP_HASH160 eca8ab37ef6fef7c7ee10323a8a3bb3101c1731e OP_EQUALVERIFY OP_CHECKSIG",
+        "hex": "76a914eca8ab37ef6fef7c7ee10323a8a3bb3101c1731e88ac",
+        "reqSigs": 1,
+        "type": "pubkeyhash",
+        "addresses": [
+          "n36Hpe9L76wHX8qNgkL8sezjLc1PMeFAgw"
+        ]
+      }
+    },
+    {
+      "value": 0.05000000,
+      "n": 1,
+      "scriptPubKey": {
+        "asm": "0 40c09e1fcde7ba7316918f5c3d50d8e1ad9f2cff97735518e933b44ddeadcfe0",
+        "hex": "002040c09e1fcde7ba7316918f5c3d50d8e1ad9f2cff97735518e933b44ddeadcfe0",
+        "reqSigs": 1,
+        "type": "witness_v0_scripthash",
+        "addresses": [
+          "tb1qgrqfu87du7a8x9533awr65xcuxke7t8ljae42x8fxw6ymh4delsqaqpqn8"
+        ]
+      }
+    }
+  ]
+}
+
+コマンド12-2-10　署名済みトランザクションを生成
+$ bcit signrawtransaction $RAW_TX "[{\"txid\":\"$TXID\",\"vout\":$VOUT,\"scriptPubKey\":\"$ScriptPubKey\", \"redeemScript\":\"$bobaliceRedeemScript\", \"amount\":0.1}]"
+{
+  "hex": "020000000001013371b7a0021f168b8535ecc6239a14ae853d038b79f84feb0d1c11f789509dd60000000000ffffffff0200093d00000000001976a914eca8ab37ef6fef7c7ee10323a8a3bb3101c1731e88ac404b4c000000000022002040c09e1fcde7ba7316918f5c3d50d8e1ad9f2cff97735518e933b44ddeadcfe0040047304402205a8fbdee315bf8e842dbdc05e221142ff341284281eb7b9b0cf1c9424aadc00902204a1619050cadc0d2850f204b881130deab22a2509a0c9746b42d0544f652e95b014830450221008148f123c27c07b0786ba4e177daf5603155dbca4a403c7aa897d3ee73b7e98d02201921e9eea123bd770228ed6d418e0f7d0941ff77753a289110ecd35cb4d1fb0d0147522102e8fe565a5bdef860c7734bd5f74edcfd6dcfb205678145c08bf5e1deb0cac01c210205d9ddeaa34d5f9cb670c152fd2b92c0833a50536ad9bfc91962b9e11c35a67052ae00000000",
+  "complete": true
+}
+
+コマンド12-2-11　変数に署名済みトランザクションを格納
+$ SIGNED_RAW_TX=020000000001013371b7a0021f168b8535ecc6239a14ae853d038b79f84feb0d1c11f789509dd60000000000ffffffff0200093d00000000001976a914eca8ab37ef6fef7c7ee10323a8a3bb3101c1731e88ac404b4c000000000022002040c09e1fcde7ba7316918f5c3d50d8e1ad9f2cff97735518e933b44ddeadcfe0040047304402205a8fbdee315bf8e842dbdc05e221142ff341284281eb7b9b0cf1c9424aadc00902204a1619050cadc0d2850f204b881130deab22a2509a0c9746b42d0544f652e95b014830450221008148f123c27c07b0786ba4e177daf5603155dbca4a403c7aa897d3ee73b7e98d02201921e9eea123bd770228ed6d418e0f7d0941ff77753a289110ecd35cb4d1fb0d0147522102e8fe565a5bdef860c7734bd5f74edcfd6dcfb205678145c08bf5e1deb0cac01c210205d9ddeaa34d5f9cb670c152fd2b92c0833a50536ad9bfc91962b9e11c35a67052ae00000000
+
+コマンド12-2-12　署名済みトランザクションを確認
+$ bcit decoderawtransaction $SIGNED_RAW_TX
+{
+  "txid": "ec2b6076c65b88d2b8acee56dc75839c15bf57175d49bef4171727a93d437651",
+  "hash": "ef9cfbf6da427fe2a032f96f6f30cdcf21106e402748834293dcb9989c0095ec",
+  "version": 2,
+  "size": 349,
+  "vsize": 184,
+  "locktime": 0,
+  "vin": [
+    {
+      "txid": "d69d5089f7111c0deb4ff8798b033d85ae149a23c6ec35858b161f02a0b77133",
+      "vout": 0,
+      "scriptSig": {
+        "asm": "",
+        "hex": ""
+      },
+      "txinwitness": [
+        "",
+        "304402205a8fbdee315bf8e842dbdc05e221142ff341284281eb7b9b0cf1c9424aadc00902204a1619050cadc0d2850f204b881130deab22a2509a0c9746b42d0544f652e95b01",
+        "30450221008148f123c27c07b0786ba4e177daf5603155dbca4a403c7aa897d3ee73b7e98d02201921e9eea123bd770228ed6d418e0f7d0941ff77753a289110ecd35cb4d1fb0d01",
+        "522102e8fe565a5bdef860c7734bd5f74edcfd6dcfb205678145c08bf5e1deb0cac01c210205d9ddeaa34d5f9cb670c152fd2b92c0833a50536ad9bfc91962b9e11c35a67052ae"
+      ],
+      "sequence": 4294967295
+    }
+  ],
+  "vout": [
+    {
+      "value": 0.04000000,
+      "n": 0,
+      "scriptPubKey": {
+        "asm": "OP_DUP OP_HASH160 eca8ab37ef6fef7c7ee10323a8a3bb3101c1731e OP_EQUALVERIFY OP_CHECKSIG",
+        "hex": "76a914eca8ab37ef6fef7c7ee10323a8a3bb3101c1731e88ac",
+        "reqSigs": 1,
+        "type": "pubkeyhash",
+        "addresses": [
+          "n36Hpe9L76wHX8qNgkL8sezjLc1PMeFAgw"
+        ]
+      }
+    },
+    {
+      "value": 0.05000000,
+      "n": 1,
+      "scriptPubKey": {
+        "asm": "0 40c09e1fcde7ba7316918f5c3d50d8e1ad9f2cff97735518e933b44ddeadcfe0",
+        "hex": "002040c09e1fcde7ba7316918f5c3d50d8e1ad9f2cff97735518e933b44ddeadcfe0",
+        "reqSigs": 1,
+        "type": "witness_v0_scripthash",
+        "addresses": [
+          "tb1qgrqfu87du7a8x9533awr65xcuxke7t8ljae42x8fxw6ymh4delsqaqpqn8"
+        ]
+      }
+    }
+  ]
+}
+
+コマンド12-2-13　署名済みトランザクションを送信
+$ bcit sendrawtransaction $SIGNED_RAW_TX
+ec2b6076c65b88d2b8acee56dc75839c15bf57175d49bef4171727a93d437651
+
+コマンド12-2-14　Script Witnessesを取得
+$ echo $SIGNED_RAW_TX | sed -e 's/^.*002040c09e1fcde7ba7316918f5c3d50d8e1ad9f2cff97735518e933b44ddeadcfe0\(.*\)00000000$/\1/'
+040047304402205a8fbdee315bf8e842dbdc05e221142ff341284281eb7b9b0cf1c9424aadc00902204a1619050cadc0d2850f204b881130deab22a2509a0c9746b42d0544f652e95b014830450221008148f123c27c07b0786ba4e177daf5603155dbca4a403c7aa897d3ee73b7e98d02201921e9eea123bd770228ed6d418e0f7d0941ff77753a289110ecd35cb4d1fb0d0147522102e8fe565a5bdef860c7734bd5f74edcfd6dcfb205678145c08bf5e1deb0cac01c210205d9ddeaa34d5f9cb670c152fd2b92c0833a50536ad9bfc91962b9e11c35a67052ae

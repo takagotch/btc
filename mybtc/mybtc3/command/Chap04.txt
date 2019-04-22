@@ -1,0 +1,288 @@
+コマンド4-4-1　base58encode.pyを実行
+$ echo 0001ab | python3 ~/work/mywallet/base58encode.py
+18N
+
+コマンド4-4-2　bxのbase58-encodeコマンド
+$ echo 0001ab | bx base58-encode
+18N
+
+コマンド4-4-3　base58decode.pyを実行
+$ echo 0001ab | python3 ~/work/mywallet/base58encode.py | python3 ~/work/mywallet/base58decode.py
+0001ab
+
+コマンド4-4-4　bxのbase58-decodeコマンド
+$ echo 0001ab | python3 ~/work/mywallet/base58encode.py | bx base58-decode
+0001ab
+
+コマンド4-4-5　公開鍵を変数に設定し、公開鍵ハッシュを生成
+$ pubKey=04a646db440d066badfd345d3a02e50d17ffaee4d570a40d23f4852e84b38e04717925ecd296dc8074480ad9ccb285bac578e40f5aa29d15268086bbe36fb2c2f6
+$ pubKeyHash=`echo $pubKey | hash160` ; echo $pubKeyHash
+c2d12e862aa628bd6030b93ed0d88b7f9f609152
+
+コマンド4-4-6　チェックサムを生成
+$ checksum=`echo 00${pubKeyHash} | sha256d | cut -c1-8` ; echo $checksum
+401e6d6b
+
+コマンド4-4-7　Base58エンコードでアドレスを生成
+$ echo 00${pubKeyHash}${checksum} | b58e
+1Jm6gRBDp32b4kwV2tdW8BAMjMUJxG2jwG
+
+コマンド4-4-8　bxのec-to-addressコマンドでアドレスを生成
+$ bx ec-to-address $pubKey
+1Jm6gRBDp32b4kwV2tdW8BAMjMUJxG2jwG
+
+コマンド4-4-9　一致することを確認
+$ test `echo 00${pubKeyHash}${checksum} | b58e` = `bx ec-to-address $pubKey` ; echo $?
+0
+
+コマンド4-4-10　b58ceを実行
+$ echo 00${pubKeyHash} | b58ce
+1Jm6gRBDp32b4kwV2tdW8BAMjMUJxG2jwG
+
+コマンド4-5-1　秘密鍵を変数に設定
+$ privKey=b76b970de357fdfdca5d15139754b0e9285b37cb63080814d1c93f2d7905def1
+
+コマンド4-5-2　WIF形式の秘密鍵を生成
+$ echo 80${privKey} | b58ce
+5KD4oiPaVmw6ghGk71Rw7zjU7Muozf21jyJ8625uHVTadB735rY 
+
+コマンド4-5-3　圧縮WIF形式の秘密鍵を生成
+$ echo 80${privKey}01 | b58ce
+L3NFoBger1Kn6CkVFWu3sspSf5J6RUoUGfUaH9ndmncKQMYfdfyH 
+
+コマンド4-5-4　xとyを取り出す
+$ x=`echo $pubKey | cut -c3-66` ; echo $x
+a646db440d066badfd345d3a02e50d17ffaee4d570a40d23f4852e84b38e0471 
+$ y=`echo $pubKey | cut -c67-130` ; echo $y
+7925ecd296dc8074480ad9ccb285bac578e40f5aa29d15268086bbe36fb2c2f6
+
+コマンド4-5-5　奇数か偶数かを調べる
+$ echo -n f6 | xxd -b | cut -d " " -f2,3
+01100110 00110110
+
+コマンド4-5-6　圧縮公開鍵を生成
+$ compPubKey=02${x} ; echo $compPubKey
+02a646db440d066badfd345d3a02e50d17ffaee4d570a40d23f4852e84b38e0471
+
+コマンド4-5-7　bxのec-to-publicコマンドで秘密鍵から圧縮公開鍵を生成
+$ bxCompPubKey=`bx ec-to-public $privKey` ; echo $bxCompPubKey
+02a646db440d066badfd345d3a02e50d17ffaee4d570a40d23f4852e84b38e0471
+
+コマンド4-5-8　答え合わせ
+$ test $compPubKey = $bxCompPubKey ; echo $?
+0
+
+コマンド4-5-9　bxのec-to-publicコマンドで秘密鍵から非圧縮公開鍵を生成
+$ bx ec-to-public -u $privKey
+04a646db440d066badfd345d3a02e50d17ffaee4d570a40d23f4852e84b38e04717925ecd296dc8074480ad9ccb285bac578e40f5aa29d15268086bbe36fb2c2f6
+
+コマンド4-5-10　非圧縮公開鍵からアドレスを生成
+$ bx ec-to-address $pubKey
+1Jm6gRBDp32b4kwV2tdW8BAMjMUJxG2jwG
+
+コマンド4-5-11　圧縮公開鍵からアドレスを生成
+$ bx ec-to-address $compPubKey
+177gLfXMGpptLYxq2KULWeDWAL2B6LnBbR
+
+コマンド4-7-1　ルートシードを生成
+$ seed=`bx seed` ; echo $seed
+270771d1cfd822fefbe4261242a020f4c4a429ef7b143915
+
+コマンド4-7-2　シードのHMAC-SHA512を計算
+$ hmac=`echo -n $seed | xxd -r -p | openssl dgst -hmac "Bitcoin seed" -sha512 | cut -c10-`; echo $hmac
+01bebe9d4006e0af0fb3448de801dfbcf1d4468f525c0ea7e54514ee95276c72cef6236a74d1062470bb5752e8752218d8586e450f591fcf0d6d76f4e859c1fd
+
+コマンド4-7-3　マスター秘密鍵を取得
+$ m=`echo $hmac | cut -c1-64` ; echo $m
+01bebe9d4006e0af0fb3448de801dfbcf1d4468f525c0ea7e54514ee95276c72
+
+コマンド4-7-4　マスターチェーンコードを取得
+$ m_chain=`echo $hmac | cut -c65-128` ; echo $m_chain
+cef6236a74d1062470bb5752e8752218d8586e450f591fcf0d6d76f4e859c1fd
+
+コマンド4-7-5　マスター公開鍵を生成
+$ M=`bx ec-to-public $m` ; echo $M
+02987864d04c9fc7fd0604bbc590e9d30d0d24be57245062e3c8566af76b3963fb
+
+コマンド4-7-6　変数を設定
+$ p_priv=$m
+$ p_pub=$M
+$ p_chain=$m_chain
+$ index=00000000
+
+コマンド4-7-7　HMAC-SHA512を実行
+$ hmac=`echo -n ${p_pub}${index} | xxd -r -p | openssl dgst -sha512 -mac HMAC -macopt hexkey:$p_chain | cut -c10-` ; echo $hmac
+11656da7ba123931967f870402ca4b911a631ae84ee4e9ec811ac22890b1ea2b12620d28f2885ec25aaf7749fbc0852195b8225fef3fe4c69109d57c327fc495
+
+コマンド4-7-8　変数hmacの左256ビットを取得
+$ hmac_L=`echo $hmac | cut -c1-64` ; echo $hmac_L
+11656da7ba123931967f870402ca4b911a631ae84ee4e9ec811ac22890b1ea2b
+
+コマンド4-7-9　子鍵のチェーンコードを取得
+$ m_0_chain=`echo $hmac | cut -c65-128` ; echo $m_0_chain
+12620d28f2885ec25aaf7749fbc0852195b8225fef3fe4c69109d57c327fc495
+
+コマンド4-7-10　子秘密鍵を生成
+$ m_0=`bx ec-add-secrets $hmac_L $p_priv` ; echo $m_0
+13242c44fa1919e0a632cb91eacc2b4e0c376177a140f894665fd71725d9569d
+
+コマンド4-7-11　子公開鍵を生成
+$ M_0=`bx ec-to-public $m_0` ; echo $M_0
+030019c44ced80665558a0051208b8831c35089eb08cb58089b9f14c767dc8b581
+
+コマンド4-7-12　変数を設定
+$ p_priv=$m_0
+$ p_pub=$M_0
+$ p_chain=$m_0_chain
+$ index=00000001
+
+コマンド4-7-13　HMAC-SHA512を実行
+$ hmac=`echo -n ${p_pub}${index} | xxd -r -p | openssl dgst -sha512 -mac HMAC -macopt hexkey:$p_chain | cut -c10-` ; echo $hmac
+d1ad492c44905ca658b4ec599dabde34f1b2204261dc0ba69694cca5164d1353935cfc59aee348267f3bca42aa046a60ca486f3dd9e5c75c8e5e1f0a8467911c
+
+コマンド4-7-14　変数hmacの左256ビットを取得
+$ hmac_L=`echo $hmac | cut -c1-64` ; echo $hmac_L
+d1ad492c44905ca658b4ec599dabde34f1b2204261dc0ba69694cca5164d1353
+
+コマンド4-7-15　チェーンコードを取得
+$ m_0_1_chain=`echo $hmac | cut -c65-128` ; echo $m_0_1_chain
+935cfc59aee348267f3bca42aa046a60ca486f3dd9e5c75c8e5e1f0a8467911c
+
+コマンド4-7-16　子秘密鍵（m/0/1）を生成
+$ m_0_1=`bx ec-add-secrets $hmac_L $p_priv` ; echo $m_0_1
+e4d175713ea97686fee7b7eb88780982fde981ba031d043afcf4a3bc3c2669f0
+
+コマンド4-7-17　子公開鍵（M/0/1）を生成
+$ M_0_1=`bx ec-to-public $m_0_1` ; echo $M_0_1
+030eb2de4b5789571e939c5c57d1ec7ffc4c0bceeb74342ff16a3aa810bd540a1a
+
+コマンド4-8-1　変数を設定
+$ vBytes=0488ADE4
+$ treeLevel=02
+$ fingerprint=`echo -n $M_0 | hash160 | cut -c1-8` ; echo $fingerprint
+24cc4bd5
+$ index=00000001
+
+コマンド4-8-2　拡張秘密鍵を生成
+$ ext_m_0_1=`echo ${vBytes}${treeLevel}${fingerprint}${index}${m_0_1_chain}00${m_0_1} | b58ce` ; echo $ext_m_0_1
+xprv9w3y9o1MEJn3vXq1aerayHfpdJqujGbLC9So7JfucouPJ3rj4m7G9fBJZ8AtMypYvxNGtGPwdDTHuyiZbxLDkagghmgZDEBJNdxhtkXJt7t
+
+コマンド4-8-3　bxのhd-newコマンドでマスター秘密鍵を生成
+$ bx hd-new $seed
+xprv9s21ZrQH143K47sF1vT7t1wVvKE8beLL5V2bsffqAw2Q65xw1vq1pYXZU8mFWqVDp53jkZACPSTmqnrvvsRj53fQDLyEiq8UDJuqAoaLR9S
+
+コマンド4-8-4　bxのhd-privateコマンドでm/0の拡張秘密鍵を生成
+$ bx hd-new $seed | bx hd-private -i 0
+xprv9uZxM8EWd2LEqqnp317E4nsaAp4xHfTmpGYXCU7aPWPpPmT4V3ok2xVozQktHioEEsXFZ53JiwLZhzG6nJv2oGSRBSve6SroNa7f5z7onmq
+
+コマンド4-8-5　m/0/1の拡張秘密鍵を生成
+$ bx hd-new $seed | bx hd-private -i 0 | bx hd-private -i 1
+xprv9w3y9o1MEJn3vXq1aerayHfpdJqujGbLC9So7JfucouPJ3rj4m7G9fBJZ8AtMypYvxNGtGPwdDTHuyiZbxLDkagghmgZDEBJNdxhtkXJt7t
+
+コマンド4-8-6　testコマンドで答え合わせ
+$ test `echo $ext_m_0_1` = `bx hd-new $seed | bx hd-private -i 0 | bx hd-private -i 1` ; echo $?
+0
+
+コマンド4-8-7　変数vBytesを変更
+$ vBytes=0488B21E
+
+コマンド4-8-8　M/0/1の拡張公開鍵を生成
+$ ext_M_0_1=`echo ${vBytes}${treeLevel}${fingerprint}${index}${m_0_1_chain}${M_0_1} | b58ce` ; echo $ext_M_0_1
+xpub6A3KZJYF4gLM91uUggPbLRcZBLgQ8jKBZNNPuh5XB9SNArBscJRWhTVnQPX6awEBr9nmkqido8qgpipeEaXhhkEJjvSkZSvUkw1NZepztm9
+
+コマンド4-8-9　bxのhd-publicコマンドで拡張公開鍵を生成
+$ bx hd-new $seed | bx hd-private -i 0 | bx hd-public -i 1
+xpub6A3KZJYF4gLM91uUggPbLRcZBLgQ8jKBZNNPuh5XB9SNArBscJRWhTVnQPX6awEBr9nmkqido8qgpipeEaXhhkEJjvSkZSvUkw1NZepztm9
+
+コマンド4-8-10　testコマンドで答え合わせ
+$ test `echo $ext_M_0_1` = `bx hd-new $seed | bx hd-private -i 0 | bx hd-public -i 1` ; echo $?
+0
+
+コマンド4-8-11　M/0の拡張公開鍵からM/0/1の拡張公開鍵を生成
+$ bx hd-new $seed | bx hd-public -i 0 | bx hd-public -i 1
+xpub6A3KZJYF4gLM91uUggPbLRcZBLgQ8jKBZNNPuh5XB9SNArBscJRWhTVnQPX6awEBr9nmkqido8qgpipeEaXhhkEJjvSkZSvUkw1NZepztm9
+
+コマンド4-9-1　変数を設定
+$ p_priv=$m
+$ p_pub=$M
+$ p_chain=$m_chain
+$ index=00000000
+
+コマンド4-9-2　HMAC-SHA512を実行
+$ hmac=`echo -n 00${p_priv}80000000 | xxd -r -p | openssl dgst -sha512 -mac HMAC -macopt hexkey:$p_chain | cut -c10-` ; echo $hmac
+be6cd3d0bd4ce5ede42ddd1b743ce10cd143dfdd1b94de8e223d147322fcdfb69c26cbb16236abf5059b3a9277e09a6aa6b3ea1179658b12cfea96bea62ee97c
+
+コマンド4-9-3　変数hmacの左256ビットを取得
+$ hmac_L=`echo $hmac | cut -c1-64` ; echo $hmac_L
+be6cd3d0bd4ce5ede42ddd1b743ce10cd143dfdd1b94de8e223d147322fcdfb6
+
+コマンド4-9-4　子鍵のチェーンコードを取得
+$ m_0H_chain=`echo $hmac | cut -c65-128` ; echo $m_0H_chain
+9c26cbb16236abf5059b3a9277e09a6aa6b3ea1179658b12cfea96bea62ee97c
+
+コマンド4-9-5　強化導出された子秘密鍵を生成
+$ m_0H=`bx ec-add-secrets $hmac_L $p_priv` ; echo $m_0H
+c02b926dfd53c69cf3e121a95c3ec0c9c318266c6df0ed3607822961b8244c28
+
+コマンド4-9-6　bxのhd-privateで強化導出された拡張秘密鍵を生成
+$ bx hd-new $seed | bx hd-private -i 0 -d | b58d | cut -c 91-156
+00c02b926dfd53c69cf3e121a95c3ec0c9c318266c6df0ed3607822961b8244c28
+
+コマンド4-10-1　作業ディレクトリに移動してリストを作成
+$ cd ~/work/mywallet
+$ vi en.CRLF.txt
+$ tr -d '\r' < en.CRLF.txt > en.txt
+$ cat en.txt | wc -l
+2048
+$ cat en.txt | head -5
+abandon
+ability
+able
+about
+above
+※出力した「en.txt」はダウンロードしたlistフォルダにもあります。
+
+
+コマンド4-10-2　エントロピーを生成
+$ ent=`bx seed -b 256` ; echo $ent
+e93b5c7ed94ccac2107cb0139ce56ae2f1eabd5337a6d8fa5e8a616e65a369ec
+
+コマンド4-10-3　チェックサムを取得
+$ checksum=`echo $ent | xxd -r -p | openssl dgst -sha256 | cut -c10-11` ; echo $checksum
+69
+
+コマンド4-10-4　11ビットずつに分解
+$ echo ${ent}${checksum} | xxd -r -p | xxd -g8 -b -c8 | cut -d " " -f2 | tr -d "\n" | sed -e "s/$/\n/" | fold -b11
+11101001001
+11011010111
+00011111101
+10001101001
+（略）
+
+コマンド4-10-5　ニモニックコードを生成
+$ echo ${ent}${checksum} | xxd -r -p | xxd -g8 -b -c8 | cut -d " " -f2 | tr -d "\n" | sed -e "s/$/\n/" | fold -b11 | while read line; do echo "$( sed -n $(echo $(( $(( 2#${line} )) + 1 )))p en.txt) " | tr -d "\n" ; done
+truck sustain cabbage raw smile genre draft noodle bean transfer follow shine burger gadget error visit suggest spray penalty security town spider police minor
+
+コマンド4-10-6　bxのmnemonic-newコマンドでニモニックコードを生成
+$ echo $ent | bx mnemonic-new
+truck sustain cabbage raw smile genre draft noodle bean transfer follow shine burger gadget error visit suggest spray penalty security town spider police minor
+
+コマンド4-10-7　ニモニックコードからシードを生成
+$ python3
+>>> import hashlib, binascii
+>>> mnemonic=b"truck sustain cabbage raw smile genre draft noodle bean transfer follow shine burger gadget error visit suggest spray penalty security town spider police minor"
+>>> salt=b"mnemonic"
+>>> seed=hashlib.pbkdf2_hmac('sha512', mnemonic, salt, 2048)
+>>> binascii.hexlify(seed)
+b'069d3ff089733ecf958aad3361d2f44ceadb8bfbee8f3a51cc5e5f9921cf9b6fb3e77e4b6b5b4d780b68b9cff3edce1f7f9b579526b26ae7f5916834395619c8'
+
+コマンド4-10-8　bxのmnemonic-to-seedでニモニックコードからシードを生成
+$ echo $ent | bx mnemonic-new | bx mnemonic-to-seed
+069d3ff089733ecf958aad3361d2f44ceadb8bfbee8f3a51cc5e5f9921cf9b6fb3e77e4b6b5b4d780b68b9cff3edce1f7f9b579526b26ae7f5916834395619c8
+
+コマンド4-10-9　シードにパスフレーズを設定する場合
+>>> salt=b"mnemonicpassword"
+>>> seed=hashlib.pbkdf2_hmac('sha512', mnemonic, salt, 2048)
+>>> binascii.hexlify(seed)
+b'0d2a453747ae19bdb9f2ca054de3e63c9de516b
+

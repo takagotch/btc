@@ -1,0 +1,53 @@
+コマンド5-7-1　Bitcoin Coreのメソッドで署名済みトランザクションをデコードして表示
+$ bcit decoderawtransaction $SIGNED_RAW_TX
+{
+  "txid": "a71168cc7bf271d9c35b85d3f844bf6fc361265180d293cd584f4b231431c570",
+  "hash": "740669d45eeb0d35e0ef580253ff1e6c49b71bec88dbb41e55571a540e5d88c9",
+  "version": 2,
+  "size": 225,
+  "vsize": 144,
+  "locktime": 0,
+  "vin": [
+    {
+      "txid": "0eec3e77ad7859f3d47c75670f475eaba196744d0e4ba51fc207195fe18bb816",
+      "vout": 1,
+      "scriptSig": {
+        "asm": "",
+        "hex": ""
+      },
+      "txinwitness": [
+        "3044022027e87db4db0958fa0f9670583c72affaea4523a603d486c2e88844147726bcb902201e0ed084f502ce3de7b3fd6b07611b402d5b4bc2928684fe9c659f626a26ace401",
+        "035f167f770d560ba5cba889c8b1bb6eadf82aee14ee743b831af3528878eb19a1"
+      ],
+      "sequence": 4294967295
+    }
+  ],
+  "vout": [
+    {
+      "value": 0.04000000,
+      "n": 0,
+      "scriptPubKey": {
+        "asm": "OP_DUP OP_HASH160 eca8ab37ef6fef7c7ee10323a8a3bb3101c1731e OP_EQUALVERIFY OP_CHECKSIG",
+        "hex": "76a914eca8ab37ef6fef7c7ee10323a8a3bb3101c1731e88ac",
+        "reqSigs": 1,
+        "type": "pubkeyhash",
+        "addresses": [
+          "n36Hpe9L76wHX8qNgkL8sezjLc1PMeFAgw"
+        ]
+      }
+    },
+    {
+      "value": 0.05000000,
+      "n": 1,
+      "scriptPubKey": {
+        "asm": "0 4080fe96116536bed3fbe7a54574bc6c4facc014",
+        "hex": "00144080fe96116536bed3fbe7a54574bc6c4facc014",
+        "reqSigs": 1,
+        "type": "witness_v0_keyhash",
+        "addresses": [
+          "tb1qgzq0a9s3v5mta5lmu7j52a9ud386esq56z8fw7"
+        ]
+      }
+    }
+  ]
+}

@@ -5,6 +5,8 @@ https://github.com/bitcoin
 ### btc wiki
 https://en.bitcoin.it/wiki/OP_CHECKSIG
 
+https://en.bitcoin.it/wiki/PayJoin
+
 ### TStnet Fauset
 https://tpfaucet.appspot.com/
 https://testnet.blockexplorer.com/
